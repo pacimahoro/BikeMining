@@ -1,0 +1,15 @@
+/target
+/build/
+
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+.project
+.metadata
+.settings/
+.classpath
+
