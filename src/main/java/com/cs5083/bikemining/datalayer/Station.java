@@ -9,13 +9,13 @@ public class Station {
 
 	private int id;
 	private String name;
-	private String latitude;
-	private String longitude;
+	private double latitude;
+	private double longitude;
 	private int dockcount;
 	private String landmark;
 	private String installation;
 	
-	public Station(int station_id, String name, String latitude, String longitude, int dockcount, String landmark, String installation){
+	public Station(int station_id, String name, double latitude, double longitude, int dockcount, String landmark, String installation){
 		this.id = station_id;
 		this.name = name;
 		this.latitude = latitude;
@@ -25,7 +25,7 @@ public class Station {
 		this.installation = installation;
 	}
 	
-	public Station(int station_id, String name, String latitude, String longitude, int dockcount){
+	public Station(int station_id, String name, double latitude, double longitude, int dockcount){
 		this.id = station_id;
 		this.name = name;
 		this.latitude = latitude;
@@ -49,19 +49,19 @@ public class Station {
 		return this.name;
 	}
 	
-	public void setLatitude(String lat) {
+	public void setLatitude(double lat) {
 		this.latitude = lat;
 	}
 	
-	public String getLatitude() {
+	public double getLatitude() {
 		return this.latitude;
 	}
 	
-	public void setLongitude(String lon) {
+	public void setLongitude(double lon) {
 		this.longitude = lon;
 	}
 	
-	public String getLongitude(){
+	public double getLongitude(){
 		return this.longitude;
 	}
 	
