@@ -74,13 +74,14 @@ public class DAOManager {
 		rset = stmt.executeQuery(query);
 		List<Trip> arrivals = new ArrayList<Trip>();
 		while (rset.next()){
+			int id = rset.getInt("trip_id");
 			int duration = rset.getInt("duration");
 			int bikeNum = rset.getInt("bikeNumber");
-			Date start = rset.getDate("startDate");
-			Date end = rset.getDate("endDate");
+			Date start = rset.getTimestamp("startDate");
+			Date end = rset.getTimestamp("endDate");
 			String startStation = rset.getString("startStation");
 			
-			Trip t = new Trip(duration, start, startStation, end, stationName, bikeNum);
+			Trip t = new Trip(id, duration, start, startStation, end, stationName, bikeNum);
 			arrivals.add(t);
 		}
 		
@@ -100,13 +101,14 @@ public class DAOManager {
 		rset = stmt.executeQuery(query);
 		List<Trip> departures = new ArrayList<Trip>();
 		while (rset.next()){
+			int id = rset.getInt("trip_id");
 			int duration = rset.getInt("duration");
 			int bikeNum = rset.getInt("bikeNumber");
 			Date start = rset.getDate("startDate");
 			Date end = rset.getDate("endDate");
 			String endStation = rset.getString("endStation");
 			
-			Trip t = new Trip(duration, start, stationName, end, endStation, bikeNum);
+			Trip t = new Trip(id, duration, start, stationName, end, endStation, bikeNum);
 			departures.add(t);
 		}
 		

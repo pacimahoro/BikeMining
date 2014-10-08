@@ -17,7 +17,8 @@ public class App {
 
 			List<Trip> departures = daoManager.getAllArrivalTripsAtStation(s.getName());			
 			for(Trip t : departures){
-				System.out.println(t.getStartStation() + ",  " + t.getEndStation()+ "  "+ t.getStartDate());
+				String d =  String.format("Date/Time : %tc", t.getStartDate() );
+				System.out.println(t.getStartStation() + ",  " + t.getEndStation()+ " " + d);
 			}
 			
 		} catch (SQLException e) {

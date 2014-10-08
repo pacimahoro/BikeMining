@@ -11,6 +11,7 @@ import java.util.Date;
 
 public class Trip {
 	
+	private int id;
 	private int duration;
 	private Date startDate;
 	private Date endDate;
@@ -18,8 +19,9 @@ public class Trip {
 	private String endStation;
 	private int bikeNumber;
 	
-	public Trip(int duration, Date startDate, String startStation, Date endDate, String endStation, int bikeNumber)
+	public Trip(int tripId, int duration, Date startDate, String startStation, Date endDate, String endStation, int bikeNumber)
 	{
+		this.id = tripId;
 		this.duration = duration;
 		this.startDate = startDate;
 		this.startStation = startStation;
@@ -50,5 +52,14 @@ public class Trip {
 	
 	public int getBikeNumber(){
 		return this.bikeNumber;
+	}
+	
+	public int getId(){
+		return id;
+	}
+	
+	public int getTimeBin(){
+		// Stub out the 
+		return 0;
 	}
 }
