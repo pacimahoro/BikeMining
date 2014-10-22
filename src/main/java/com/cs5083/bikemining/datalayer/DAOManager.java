@@ -69,7 +69,7 @@ public class DAOManager {
 	public List<Trip> getAllArrivalTripsAtStation(String stationName) throws SQLException{
 		openDBConnection();
 		stmt = conn.createStatement();
-		query = "SELECT * FROM bike_trip WHERE endStation ='"+stationName+"'";
+		query = "SELECT * FROM bike_trip WHERE endstation ='"+stationName+"'";
 		
 		rset = stmt.executeQuery(query);
 		List<Trip> arrivals = new ArrayList<Trip>();
@@ -77,14 +77,15 @@ public class DAOManager {
 			int id = rset.getInt("trip_id");
 			int duration = rset.getInt("duration");
 			int bikeNum = rset.getInt("bikeNumber");
-			Date start = rset.getTimestamp("startDate");
-			Date end = rset.getTimestamp("endDate");
-			String startStation = rset.getString("startStation");
+			Date start = rset.getTimestamp("startdate");
+			Date end = rset.getTimestamp("enddate");
+			String startStation = rset.getString("startstation");
 			
 			Trip t = new Trip(id, duration, start, startStation, end, stationName, bikeNum);
 			arrivals.add(t);
 		}
 		
+		System.out.println("arrivals from dataset: "+ arrivals.size());
 		return arrivals;
 	}
 	
@@ -96,22 +97,26 @@ public class DAOManager {
 	public List<Trip> getAllDepartureTripsFromStation(String stationName) throws SQLException{
 		openDBConnection();
 		stmt = conn.createStatement();
-		query = "SELECT * FROM bike_trip WHERE startStation ='"+stationName+"'";
+		query = "SELECT * FROM bike_trip WHERE startstation ='"+stationName+"'";
 		
 		rset = stmt.executeQuery(query);
 		List<Trip> departures = new ArrayList<Trip>();
+		int id, duration, bikeNum;
+		Date start, end;
+		String endStation = null;
 		while (rset.next()){
-			int id = rset.getInt("trip_id");
-			int duration = rset.getInt("duration");
-			int bikeNum = rset.getInt("bikeNumber");
-			Date start = rset.getDate("startDate");
-			Date end = rset.getDate("endDate");
-			String endStation = rset.getString("endStation");
+			id = rset.getInt("trip_id");
+			duration = rset.getInt("duration");
+			bikeNum = rset.getInt("bikeNumber");
+			start = rset.getDate("startdate");
+			end = rset.getDate("enddate");
+			endStation = rset.getString("endstation");
 			
 			Trip t = new Trip(id, duration, start, stationName, end, endStation, bikeNum);
 			departures.add(t);
+			
 		}
-		
+		System.out.println("departures from dataset: "+ departures.size());
 		return departures;
 	}
 	

@@ -41,5 +41,5 @@ CREATE TABLE IF NOT EXISTS bike_trip(
 
 --# dump data into the table.
 --COPY bike_station FROM '/Users/Shared/data/201402_station_data.csv' DELIMITER ',' CSV HEADER; 
-COPY bike_trip FROM '/Users/Shared/data/201402_trip_data.csv' DELIMITER ',' CSV HEADER; 
+COPY bike_trip FROM '/Users/Shared/data/trip_data3.csv' DELIMITER ',' CSV HEADER; 
 --COPY bike_rebalancing FROM '/Users/Shared/data/201402_rebalancing_data.csv' DELIMITER ',' CSV HEADER;

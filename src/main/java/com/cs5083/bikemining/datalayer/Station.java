@@ -1,5 +1,12 @@
 package com.cs5083.bikemining.datalayer;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.swing.RowFilter.Entry;
+
 /**
  * This class implements a model object for a Bike Station
  * @author pacifique
@@ -71,6 +78,79 @@ public class Station {
 	
 	public int getDockcount(){
 		return this.dockcount;
+	}
+	
+	private List<Trip> filterWeekDayTrips(List<Trip> allTrips){
+		List<Trip> results = new ArrayList<Trip>();
+		
+		for(Trip t : allTrips){
+			if(t.getArrivalDayOfWeek() <= 5){
+				results.add(t);
+			}
+		}
+		return results;
+	}
+	
+	private double[] normalizeTripCounts(List<Trip> trips, String tripType){
+		// Total number of trips 
+		int totalCount = trips.size();
+		
+		// Group the trips per hour
+		int [] arrivalHoursCount = new int[24];
+		for(Trip t : trips){
+			int index = t.getTripHour(tripType);
+			int c = arrivalHoursCount[index];
+			c++;
+			arrivalHoursCount[index] = c;
+		}
+		
+		// Normalize the count
+		double [] normalizedHourlyTrips = new double[24];
+		
+		for (int i = 0; i < normalizedHourlyTrips.length; i++) {
+			double v = (double)arrivalHoursCount[i]/totalCount;
+			normalizedHourlyTrips[i] = v;
+		}
+		return normalizedHourlyTrips;
+	}
+	
+	public double[] getNormalizedArrivals(){
+		try {
+			// Get all arrivals
+			List<Trip> allArrivals = DAOManager.getInstance().getAllArrivalTripsAtStation(this.getName());
+			
+			// Filter weekdays only 
+			List<Trip> weekdayArrivals = this.filterWeekDayTrips(allArrivals);
+			
+			return normalizeTripCounts(weekdayArrivals, "arrival");
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null; 
+	}
+	
+	public double[] getNormalizedDepartures(){
+		try {
+			// Get all arrivals
+			List<Trip> departures = DAOManager.getInstance().getAllDepartureTripsFromStation(this.getName());
+			
+			// Filter weekdays only 
+			List<Trip> weekdayDepartures = this.filterWeekDayTrips(departures);
+			System.out.println("weekday departures: "+ weekdayDepartures.size());
+			
+			for (Trip i : weekdayDepartures) {
+				System.out.println("StartStation: "+ i.getStartStation()+", EndStation: "+ i.getEndStation()+ ", Start: "+i.getStartDate());
+			}
+			
+			return normalizeTripCounts(weekdayDepartures, "departure");
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 }
