@@ -121,6 +121,7 @@ public class Station {
 			
 			// Filter weekdays only 
 			List<Trip> weekdayArrivals = this.filterWeekDayTrips(allArrivals);
+			System.out.println("weekday arrivals: "+ weekdayArrivals.size());
 			
 			return normalizeTripCounts(weekdayArrivals, "arrival");
 			

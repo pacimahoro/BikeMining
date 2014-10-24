@@ -44,7 +44,6 @@ public class DAOManager {
 		openDBConnection();
 		stmt = conn.createStatement();
 		query = "SELECT * FROM bike_station WHERE station_id="+ station_id;
-		System.out.println("\nExecuting query: " + query);
 		ResultSet rset = stmt.executeQuery(query);
 		
 		Station station = null;
@@ -56,7 +55,6 @@ public class DAOManager {
 			double lon = rset.getDouble("long");
 			
 			station = new Station(station_id,name, lat, lon, dockcount);
-			System.out.println("Name: "+ name + " Dockcount: "+ dockcount);
 		}
 		
 		return station;
@@ -66,7 +64,6 @@ public class DAOManager {
 		openDBConnection();
 		query = "SELECT * FROM bike_station";
 		PreparedStatement ps = conn.prepareStatement(query);
-		System.out.println("Query: "+ ps.toString());
 		rset = ps.executeQuery();
 		
 		List<Station> stations = new ArrayList<Station>();
@@ -107,7 +104,6 @@ public class DAOManager {
 		query = "SELECT * FROM bike_trip WHERE endstation = ?";
 		PreparedStatement ps = conn.prepareStatement(query);
 		ps.setString(1, getQuotedValue(stationName));
-		System.out.println("Query: "+ ps.toString());
 		
 		rset = ps.executeQuery();
 		List<Trip> arrivals = new ArrayList<Trip>();
@@ -138,7 +134,6 @@ public class DAOManager {
 		query = "SELECT * FROM bike_trip WHERE startstation =?";
 		PreparedStatement ps = conn.prepareStatement(query);
 		ps.setString(1, getQuotedValue(stationName));
-		System.out.println("Query: "+ ps.toString());
 		
 		rset = ps.executeQuery();
 		List<Trip> departures = new ArrayList<Trip>();
