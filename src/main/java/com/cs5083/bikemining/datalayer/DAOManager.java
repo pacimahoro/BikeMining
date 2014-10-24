@@ -2,6 +2,7 @@ package com.cs5083.bikemining.datalayer;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -61,6 +62,41 @@ public class DAOManager {
 		return station;
 	}
 	
+	public List<Station> getAllStations() throws SQLException{
+		openDBConnection();
+		query = "SELECT * FROM bike_station";
+		PreparedStatement ps = conn.prepareStatement(query);
+		System.out.println("Query: "+ ps.toString());
+		rset = ps.executeQuery();
+		
+		List<Station> stations = new ArrayList<Station>();
+		int id, dockcount;
+		String name;
+		double lat, lon;
+		Station s;
+		while(rset.next()){
+			id = rset.getInt("station_id");
+			dockcount = rset.getInt("dockcount");
+			name = rset.getString("name");
+			lat = rset.getDouble("lat");
+			lon = rset.getDouble("long");
+			
+			s = new Station(id, name, lat, lon, dockcount);
+			stations.add(s);
+		}
+		
+		return stations;
+	}
+	
+	/**
+	 * Helper function to add quotes around db statements. 
+	 * @param str
+	 * @return
+	 */
+	private String getQuotedValue(String str){
+		return '\''+str+'\'';
+	}
+	
 	/**
 	 * Get all arrival trips at a given station
 	 * @param stationName the name of the station
@@ -68,10 +104,12 @@ public class DAOManager {
 	 */
 	public List<Trip> getAllArrivalTripsAtStation(String stationName) throws SQLException{
 		openDBConnection();
-		stmt = conn.createStatement();
-		query = "SELECT * FROM bike_trip WHERE endstation ='"+stationName+"'";
+		query = "SELECT * FROM bike_trip WHERE endstation = ?";
+		PreparedStatement ps = conn.prepareStatement(query);
+		ps.setString(1, getQuotedValue(stationName));
+		System.out.println("Query: "+ ps.toString());
 		
-		rset = stmt.executeQuery(query);
+		rset = ps.executeQuery();
 		List<Trip> arrivals = new ArrayList<Trip>();
 		while (rset.next()){
 			int id = rset.getInt("trip_id");
@@ -87,7 +125,8 @@ public class DAOManager {
 		
 		System.out.println("arrivals from dataset: "+ arrivals.size());
 		return arrivals;
-	}
+	}	
+
 	
 	/**
 	 * Get all departure trips from a given station
@@ -96,10 +135,12 @@ public class DAOManager {
 	 */
 	public List<Trip> getAllDepartureTripsFromStation(String stationName) throws SQLException{
 		openDBConnection();
-		stmt = conn.createStatement();
-		query = "SELECT * FROM bike_trip WHERE startstation ='"+stationName+"'";
+		query = "SELECT * FROM bike_trip WHERE startstation =?";
+		PreparedStatement ps = conn.prepareStatement(query);
+		ps.setString(1, getQuotedValue(stationName));
+		System.out.println("Query: "+ ps.toString());
 		
-		rset = stmt.executeQuery(query);
+		rset = ps.executeQuery();
 		List<Trip> departures = new ArrayList<Trip>();
 		int id, duration, bikeNum;
 		Date start, end;
@@ -108,8 +149,8 @@ public class DAOManager {
 			id = rset.getInt("trip_id");
 			duration = rset.getInt("duration");
 			bikeNum = rset.getInt("bikeNumber");
-			start = rset.getDate("startdate");
-			end = rset.getDate("enddate");
+			start = rset.getTimestamp("startdate");
+			end = rset.getTimestamp("enddate");
 			endStation = rset.getString("endstation");
 			
 			Trip t = new Trip(id, duration, start, stationName, end, endStation, bikeNum);

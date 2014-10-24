@@ -140,10 +140,6 @@ public class Station {
 			List<Trip> weekdayDepartures = this.filterWeekDayTrips(departures);
 			System.out.println("weekday departures: "+ weekdayDepartures.size());
 			
-			for (Trip i : weekdayDepartures) {
-				System.out.println("StartStation: "+ i.getStartStation()+", EndStation: "+ i.getEndStation()+ ", Start: "+i.getStartDate());
-			}
-			
 			return normalizeTripCounts(weekdayDepartures, "departure");
 			
 		} catch (SQLException e) {

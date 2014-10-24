@@ -1,48 +1,106 @@
 package com.cs5083.bikemining;
 
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
-import java.util.Map.Entry;
 
 import com.cs5083.bikemining.datalayer.DAOManager;
 import com.cs5083.bikemining.datalayer.Station;
-import com.cs5083.bikemining.datalayer.Trip;
 
 public class App {
 	public static void main(String[] args){
 		System.out.println("Bike Sharing Mining App started");
+		// Create output file if it doesn't exist.
+		String outputFileName = "normalized_trip.csv";
 		
-		DAOManager daoManager = DAOManager.getInstance();
 		try {
-			Station s = daoManager.getStationById(2);
-
-//			List<Trip> list  = daoManager.getAllDepartureTripsFromStation(s.getName());
-//			System.out.println("Trip Count: "+ list.size());
-//			System.out.println(list.get(0).getEndDate());
-//			
-//			for(Trip i : list){
-//				System.out.println("StartStation: "+ i.getStartStation()+", EndStation: "+ i.getEndStation()+ ", Duration: "+i.getDuration());
-//			}
+			File file = new File(outputFileName);
+			file.createNewFile();
 			
-			System.out.println("Station Name: "+ s.getName());
-
-			System.out.println("Arrivals");
-			double[] m = s.getNormalizedArrivals();
-			for (int i = 0; i < m.length; i++) {
-				System.out.println("Hour: "+i+", N="+m[i]);
+			generateNormalizedTripFile(outputFileName);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public static String getNormalizedTripHeader(){
+		StringBuilder sb = new StringBuilder();
+		sb.append("Station");
+		sb.append(',');
+		String temp;
+		for (int i = 0; i < 24; i++) {
+			if(i == 23){
+				temp = "Pickups 23-0";
+			}else{
+				temp = "Pickups "+ i +"-"+ (i+1);
+			}
+			 
+			sb.append(temp);
+			sb.append(",");
+		}
+		
+		for (int i = 0; i < 24; i++) {
+			if(i == 23){
+				temp = "Returns 23-0";
+			}else{
+				temp = "Returns "+ i +"-"+ (i+1);
+			}
+			 
+			sb.append(temp);
+			
+			if(i!= 23){
+				sb.append(",");
+			}
+		}
+		
+		return sb.toString();
+	}
+	
+	public static void generateNormalizedTripFile(String fileName){
+		DAOManager daoManager = DAOManager.getInstance();
+		
+		try {
+			// Create writer
+			FileWriter writer = new FileWriter(fileName);
+			List<Station> stations = daoManager.getAllStations();
+			
+			// Writer the csv header first
+			writer.append(getNormalizedTripHeader());
+			writer.append("\n");
+			
+			double[] arr, dep;
+			for (Station station : stations) {
+				System.out.println("Station Name: "+ station.getName());
+				
+				// Add Station Id
+				writer.append(String.valueOf(station.getId()));
+				writer.append(',');
+				
+				// Add normalized departures
+				dep = station.getNormalizedDepartures();
+				for (int i = 0; i < dep.length; i++) {
+					writer.append(String.valueOf(dep[i]));
+					writer.append(',');	
+				}
+				
+				// Add normalized arrivals
+				arr = station.getNormalizedArrivals();
+				for (int i = 0; i < arr.length; i++) {
+					writer.append(String.valueOf(arr[i]));
+					if(i != arr.length - 1){
+						writer.append(',');	
+					}
+				}
+				
+				writer.append('\n');
 			}
 			
-			System.out.println("Departures");
-			m = s.getNormalizedDepartures();
-			for (int i = 0; i < m.length; i++) {
-				System.out.println("Hour: "+i+", N="+m[i]);
-			}
+			writer.flush();
+			writer.close();
 			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
