@@ -3,6 +3,9 @@
   <groupId>com.cs5083</groupId>
   <artifactId>bikemining</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>Project used to manage bikeshare mining</name>
+  <url>http://maven.apache.org</url>
   <dependencies>
   	<dependency>
   		<groupId>nz.ac.waikato.cms.weka</groupId>
@@ -18,6 +21,50 @@
 		<groupId>joda-time</groupId>
 		<artifactId>joda-time</artifactId>
 		<version>2.5</version>
-</dependency>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-beans</artifactId>
+		<version>4.1.0.RELEASE</version>
+	</dependency>
+<!-- 	<dependency> -->
+<!-- 		<groupId>org.nuiton.thirdparty</groupId> -->
+<!-- 		<artifactId>JRI</artifactId> -->
+<!-- 		<version>0.8-4</version> -->
+<!-- 	</dependency> -->
+	<dependency>
+     <groupId>org.nuiton.thirdparty</groupId>
+     <artifactId>JRI</artifactId>
+     <version>0.5-0</version>
+     <scope>system</scope>
+     <systemPath>/Library/Frameworks/R.framework/Resources/library/rJava/jri/JRI.jar</systemPath>
+   </dependency>
   </dependencies>
+  <build>
+  <plugins>
+     <plugin> 
+        <groupId>org.apache.maven.plugins</groupId> 
+        <artifactId>maven-compiler-plugin</artifactId> 
+        <version>2.3.2</version> 
+        <inherited>true</inherited> 
+        <configuration> 
+              <source>1.6</source> 
+              <target>1.6</target> 
+         </configuration> 
+     </plugin>
+    <plugin>
+      <artifactId>maven-assembly-plugin</artifactId>
+      <configuration>
+        <archive>
+          <manifest>
+            <mainClass>com.cs5083.bikemining.App</mainClass>
+          </manifest>
+        </archive>
+        <descriptorRefs>
+          <descriptorRef>jar-with-dependencies</descriptorRef>
+        </descriptorRefs>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
 </project>
