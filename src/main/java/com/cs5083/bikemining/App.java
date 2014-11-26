@@ -1,28 +1,37 @@
 package com.cs5083.bikemining;
 
-import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
+import com.cs5083.bikemining.businesslayer.Prediction;
 import com.cs5083.bikemining.datalayer.DAOManager;
 import com.cs5083.bikemining.datalayer.Station;
 
 public class App {
+	
 	public static void main(String[] args){
 		System.out.println("Bike Sharing Mining App started");
 		// Create output file if it doesn't exist.
 		String outputFileName = "normalized_trip.csv";
 		
-		try {
-			File file = new File(outputFileName);
-			file.createNewFile();
-			
-			generateNormalizedTripFile(outputFileName);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		
+		
+		Prediction p = new Prediction(2);
+		p.Predict();
+		p.runRScript(args);
+		
+//		try {
+//			File file = new File(outputFileName);
+//			file.createNewFile();
+//			
+//			generateNormalizedTripFile(outputFileName);
+//			
+//			
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		
 	}
 	
 	public static String getNormalizedTripHeader(){

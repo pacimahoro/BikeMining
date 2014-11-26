@@ -8,8 +8,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+
+import org.joda.time.DateTime;
+
 
 public class DAOManager {
 
@@ -154,6 +159,52 @@ public class DAOManager {
 		}
 		System.out.println("departures from dataset: "+ departures.size());
 		return departures;
+	}
+	
+	public List<StationStatus> getStationBikeAvailability(int stationId) throws SQLException{
+		openDBConnection();
+		query = "SELECT * FROM bike_rebalancing WHERE station_id =? ORDER BY rebalancing_time ASC";
+		PreparedStatement ps = conn.prepareStatement(query);
+		ps.setInt(1, stationId);
+		rset = ps.executeQuery();
+		
+		List<StationStatus> l = new ArrayList<StationStatus>();
+		while (rset.next()){
+			int bike_available = rset.getInt("bikes_available");
+			int docks_available = rset.getInt("docks_available");
+			Date t = rset.getTimestamp("rebalancing_time");
+			
+			StationStatus s = new StationStatus(stationId, bike_available, docks_available, new DateTime(t));
+			l.add(s);
+		}
+		
+		return l;
+	}
+	
+	public Weather getWeatherData(int stationId, DateTime day) throws SQLException{
+		openDBConnection();
+		query = "SELECT * FROM weather WHERE wDate =?";
+		PreparedStatement ps = conn.prepareStatement(query);
+		ps.setDate(1, new java.sql.Date(day.getMillis()));
+		rset = ps.executeQuery();
+		
+		int i = 0;
+		Weather m = null;
+		
+		// FIXME: for now since we don't have a way to map station (id, or name) to the ZIP code field in the weather data,
+		// we will use the first record found as the default.
+		while(rset.next() && i == 0){
+			int t = rset.getInt("mean_temperature_f");
+			int h = rset.getInt("mean_humidity");
+			int w = rset.getInt("mean_wind_speed_mph");
+			int z = rset.getInt("zip");
+			String e = rset.getString("events");
+			
+			m = new Weather(t, h, w, e, z);
+			i++;
+		}
+		
+		return m;
 	}
 	
 	public static DAOManager getInstance(){

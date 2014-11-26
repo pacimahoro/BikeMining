@@ -4,8 +4,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import javax.swing.RowFilter.Entry;
+import org.joda.time.DateTime;
+import org.joda.time.Hours;
+import org.joda.time.Interval;
 
 /**
  * This class implements a model object for a Bike Station
@@ -21,6 +24,8 @@ public class Station {
 	private int dockcount;
 	private String landmark;
 	private String installation;
+	private List<StationStatus> hourlyStatuses;
+	private Weather weather;
 	
 	public Station(int station_id, String name, double latitude, double longitude, int dockcount, String landmark, String installation){
 		this.id = station_id;
@@ -78,6 +83,74 @@ public class Station {
 	
 	public int getDockcount(){
 		return this.dockcount;
+	}
+	
+	public void retrieveHourlyActivity(){
+		try {
+			// Get all status. These are 2-minutes interval status times. 
+			List<StationStatus> statuses = DAOManager.getInstance().getStationBikeAvailability(this.getId());
+			
+			// Now we need to group the time into 60-min interval status
+			DateTime currentTime = statuses.get(0).getTime();
+			this.hourlyStatuses = new ArrayList<StationStatus>();
+			this.hourlyStatuses.add(statuses.get(0));
+			
+			for (StationStatus stationStatus : statuses) {
+				Interval i = new Interval(currentTime, stationStatus.getTime());
+
+				if(Hours.hoursIn(i).getHours() >= 1){
+					this.hourlyStatuses.add(stationStatus);
+					
+					// Update currentTime
+					currentTime = currentTime.plusHours(1);
+				}
+			}
+			
+			System.out.println("Starting time: " + this.hourlyStatuses.get(0).getTime());
+			System.out.println("Initial station status count: "+ statuses.size());
+			System.out.println("Trimmer Hourly status count: "+ this.hourlyStatuses.size());
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public List<StationStatus> getHourlyBikeActivity(boolean includeWeatherData){
+		if(this.hourlyStatuses == null){
+			this.retrieveHourlyActivity();
+		}
+		
+		// Check if we need to include weather data or not.
+		if (includeWeatherData == true) {
+			this.retrieveWeatherData();	
+		}
+		
+		return this.hourlyStatuses;
+	}
+	
+	public void retrieveWeatherData(){
+		Map<String, Weather> dateToWeatherMap = new HashMap<String, Weather>();
+		Weather w;
+		
+		for (StationStatus status : this.hourlyStatuses) {
+			try {
+				w = dateToWeatherMap.get(status.getTime().toString());
+				if(w != null){
+					status.setWeather(w);
+				}
+				else {
+					w = DAOManager.getInstance().getWeatherData(this.getId(), status.getTime());
+					if(w != null){
+						status.setWeather(w);
+						dateToWeatherMap.put(status.getTime().toString(), w);
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private List<Trip> filterWeekDayTrips(List<Trip> allTrips){
