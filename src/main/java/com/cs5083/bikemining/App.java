@@ -4,7 +4,9 @@ import java.io.FileWriter;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.cs5083.bikemining.businesslayer.Prediction;
+import org.joda.time.DateTime;
+
+import com.cs5083.bikemining.businesslayer.Coordinator;
 import com.cs5083.bikemining.datalayer.DAOManager;
 import com.cs5083.bikemining.datalayer.Station;
 
@@ -13,13 +15,23 @@ public class App {
 	public static void main(String[] args){
 		System.out.println("Bike Sharing Mining App started");
 		// Create output file if it doesn't exist.
-		String outputFileName = "normalized_trip.csv";
+//		String outputFileName = "normalized_trip.csv";
+
+		Coordinator coordinator = new Coordinator();
+		
+		/**
+		 * For now, we will select time that match a given time interval. 
+		 * Hopefully at least a day or month or several months.
+		 * We will then run our prediction and compare the results with the actual prediction for that time interval.
+		 */
+
+		DateTime todayLastYear = DateTime.now().minusMonths(12);
+		int predictionCount = 5;
+		int stationId = 2;
+		
+		coordinator.runPrediction(stationId, todayLastYear, predictionCount);
 		
 		
-		
-		Prediction p = new Prediction(2);
-		p.Predict();
-		p.runRScript(args);
 		
 //		try {
 //			File file = new File(outputFileName);
