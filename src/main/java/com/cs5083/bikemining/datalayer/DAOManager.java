@@ -163,7 +163,7 @@ public class DAOManager {
 	
 	public List<StationStatus> getStationBikeAvailability(int stationId) throws SQLException{
 		openDBConnection();
-		query = "SELECT * FROM bike_rebalancing WHERE station_id =? ORDER BY rebalancing_time ASC";
+		query = "SELECT * FROM bike_hourlystatus WHERE station_id =? ORDER BY rebalancing_time ASC";
 		PreparedStatement ps = conn.prepareStatement(query);
 		ps.setInt(1, stationId);
 		rset = ps.executeQuery();
@@ -179,6 +179,21 @@ public class DAOManager {
 		}
 		
 		return l;
+	}
+	
+	public boolean bulkInsertBikeHourlyStatuses(List<StationStatus> statuses) throws SQLException{
+		openDBConnection();
+		query = "INSERT INTO bike_hourlystatus VALUES(?,?,?,?)";
+		PreparedStatement ps = conn.prepareStatement(query);
+		
+		for (StationStatus status : statuses) {
+			ps.setInt(1, status.getStationId());
+			ps.setInt(2, status.getAvailableBikes());
+			ps.setInt(3, status.getAvailableDocks());
+			ps.setTimestamp(4, new java.sql.Timestamp(status.getTime().getMillis()));
+			ps.executeUpdate();	
+		}	
+		return true;
 	}
 	
 	public Weather getWeatherData(int stationId, DateTime day) throws SQLException{

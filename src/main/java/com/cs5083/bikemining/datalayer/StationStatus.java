@@ -39,6 +39,10 @@ public class StationStatus {
 		this.weather = w;
 	}
 	
+	public int getStationId(){
+		return this.station_id;
+	}
+	
 	public int isWorkingDay(){
 		if (this.time.getDayOfWeek() <=5){
 			return 1;

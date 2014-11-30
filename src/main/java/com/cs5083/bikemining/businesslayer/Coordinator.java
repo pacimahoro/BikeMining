@@ -21,50 +21,15 @@ import com.cs5083.bikemining.datalayer.Weather;
 public class Coordinator {
 
 	private StationStatus currentStatus;
+	private static Coordinator instance;
 	
 	public Coordinator() {
 	}
-	
-	private void prepareArimaData(Station station){
-		// short circuit
-		if(station == null){ return; }
-		
-		// 2. Retrieve hourly station activity.
-		boolean includeWeatherData = false;
-		List<StationStatus> hourlyActivity = station.getHourlyBikeActivity(includeWeatherData);
-		
-		// 3. build the bikeCount series
-		List<Integer> bikeCountHourlySeries = new ArrayList<Integer>();
-		for (StationStatus stationStatus : hourlyActivity) {
-			bikeCountHourlySeries.add(stationStatus.getAvailableBikes());
-		}
-		
-		// 4. Create input file for the mining task
-		String fileName = "input_arima_"+station.getId()+".csv";
-		
-		// Create writer
-		FileWriter writer;
-		try {
-			writer = new FileWriter(fileName);
-			for(int bikeCount : bikeCountHourlySeries){
-				writer.append(String.valueOf(bikeCount));
-				writer.append("\n");
-			}
-	
-			writer.flush();
-			writer.close();
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	
+
 	public void runPrediction(int stationId, DateTime predictionTime, int predictionCount){	
 		try {
 			Station station = DAOManager.getInstance().getStationById(stationId);
-			
+			getCurrentBikeStatus(stationId);
 			// Create R engine
 			String jriArgs[] = {"--no-save"};
 			Rengine re = new Rengine(jriArgs, false, null);
@@ -84,5 +49,42 @@ public class Coordinator {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public List<Station> getStations(){
+		try {
+			List<Station> stations = DAOManager.getInstance().getAllStations();
+			return stations;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public StationStatus getCurrentBikeStatus(int stationId){
+		try {
+			Station station = DAOManager.getInstance().getStationById(stationId);
+			StationStatus currentStatus = station.getCurrentBikeStatus();
+			if (currentStatus != null) {
+				System.out.println(String.format("Current Time: %s Bike Count: %d", currentStatus.getTime(), currentStatus.getAvailableBikes()));	
+			}
+			
+			return currentStatus;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public static Coordinator getInstance(){
+		if (instance == null) {
+			instance = new Coordinator();
+		}
+		
+		return instance;
 	}
 }

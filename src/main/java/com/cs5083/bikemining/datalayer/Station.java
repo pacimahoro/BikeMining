@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.SSLEngineResult.Status;
+
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 import org.joda.time.Interval;
@@ -26,6 +28,20 @@ public class Station {
 	private String installation;
 	private List<StationStatus> hourlyStatuses;
 	private Weather weather;
+	
+//	public static void main(String[] args){
+//		try {
+//			List<Station> stations = DAOManager.getInstance().getAllStations();
+//			for (Station station : stations) {
+//				station.retrieveHourlyActivity();	
+//				DAOManager.getInstance().bulkInsertBikeHourlyStatuses(station.getHourlyStatuses());
+//			}
+//			
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 	
 	public Station(int station_id, String name, double latitude, double longitude, int dockcount, String landmark, String installation){
 		this.id = station_id;
@@ -85,27 +101,31 @@ public class Station {
 		return this.dockcount;
 	}
 	
+	public List<StationStatus> getHourlyStatuses(){
+		return this.hourlyStatuses;
+	}
+	
 	public void retrieveHourlyActivity(){
 		try {
 			// Get all status. These are 2-minutes interval status times. 
 			List<StationStatus> statuses = DAOManager.getInstance().getStationBikeAvailability(this.getId());
 			
-			// Now we need to group the time into 60-min interval status
-			DateTime currentTime = statuses.get(0).getTime();
-			this.hourlyStatuses = new ArrayList<StationStatus>();
-			this.hourlyStatuses.add(statuses.get(0));
-			
-			for (StationStatus stationStatus : statuses) {
-				Interval i = new Interval(currentTime, stationStatus.getTime());
-
-				if(Hours.hoursIn(i).getHours() >= 1){
-					this.hourlyStatuses.add(stationStatus);
-					
-					// Update currentTime
-					currentTime = currentTime.plusHours(1);
-				}
-			}
-			
+//			// Now we need to group the time into 60-min interval status
+//			DateTime currentTime = statuses.get(0).getTime();
+//			this.hourlyStatuses = new ArrayList<StationStatus>();
+//			this.hourlyStatuses.add(statuses.get(0));
+//			
+//			for (StationStatus stationStatus : statuses) {
+//				Interval i = new Interval(currentTime, stationStatus.getTime());
+//
+//				if(Hours.hoursIn(i).getHours() >= 1){
+//					this.hourlyStatuses.add(stationStatus);
+//					
+//					// Update currentTime
+//					currentTime = currentTime.plusHours(1);
+//				}
+//			}
+			this.hourlyStatuses = statuses;
 			System.out.println("Starting time: " + this.hourlyStatuses.get(0).getTime());
 			System.out.println("Initial station status count: "+ statuses.size());
 			System.out.println("Trimmer Hourly status count: "+ this.hourlyStatuses.size());
@@ -127,6 +147,22 @@ public class Station {
 		}
 		
 		return this.hourlyStatuses;
+	}
+	
+	public StationStatus getCurrentBikeStatus(){
+		if(this.hourlyStatuses == null){
+			this.retrieveHourlyActivity();
+		}
+		
+		DateTime t;
+		DateTime currentTime = DateTime.now().minusMonths(12);
+		for (StationStatus status : this.hourlyStatuses) {
+			t = status.getTime();
+			if (Hours.hoursBetween(currentTime, t).getHours() == 1){
+				return status;
+			}
+		}
+		return null;
 	}
 	
 	public void retrieveWeatherData(){
