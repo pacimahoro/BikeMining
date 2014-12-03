@@ -1,10 +1,32 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>BikeMining App</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>Bay Area Bike Predictor</title>
+
+  <!-- Application styles. -->
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+  <!-- build:[href] /styles.min.css -->
+    <link href='/bower_components/mapbox.js/mapbox.css' rel='stylesheet' />
+    <link rel="stylesheet" href="/app/styles/index.css">
+  <!-- /build -->
 </head>
+
 <body>
-	<h3>The content for the Bike Mining App should go here...</h3>
+  <!-- Application container. -->
+  <main role="main" id="main"></main>
+
+  <!-- Application source. -->
+  <!-- build:[src] /source.min.js -->
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+  <script src="/bower_components/requirejs/require.js"
+    data-main="/app/config"></script>
+  <!-- /build -->
 </body>
 </html>

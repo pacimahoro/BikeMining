@@ -1,0 +1,9 @@
+.leaflet-popup-content .marker-title {
+    font-size: 18px;
+    color: red;
+    padding-bottom: 10px;
+}
+
+.value {
+    font-weight: bold;
+}
