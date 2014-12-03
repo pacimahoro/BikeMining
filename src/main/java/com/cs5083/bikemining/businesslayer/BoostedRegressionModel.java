@@ -29,7 +29,7 @@ public class BoostedRegressionModel extends RegressionModel {
 		// load data
 		re.eval(String.format("train <- read.csv('%s', stringsAsFactors=FALSE)", this.traningFileName), false);
 		re.eval("d = dim(train)");
-		System.out.println(x=re.eval("d"));
+//		System.out.println(x=re.eval("d"));
 		
 		// Do the pre-processing
 		re.eval("train$workingday <- factor(train$workingday, c(0,1), ordered=FALSE)", false);
@@ -55,11 +55,10 @@ public class BoostedRegressionModel extends RegressionModel {
 		//
 		re.eval("test.1['pred'] <- predict(genModel, test.1[,-c(1)], best.iter, type='response')");
 		//
-		System.out.println(x = re.eval("summary(test.1$pred)"));
+//		System.out.println(x = re.eval("summary(test.1$pred)"));
 		
 		//Print prediction results:
 		x = re.eval("test.1$pred");
-		System.out.println(x);
 		double[] predictions = re.eval("test.1$pred").asDoubleArray();
 		double[] results = new double[PREDICTION_COUNT];
 		for(int i=0; predictions!= null && i<predictions.length && i < PREDICTION_COUNT; i++){
@@ -73,5 +72,4 @@ public class BoostedRegressionModel extends RegressionModel {
 		PredictionItem predictionItem = new PredictionItem(results, PREDICTION_COUNT, x.asDouble());
 		return predictionItem;
 	}
-
 }

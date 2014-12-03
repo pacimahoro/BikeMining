@@ -14,6 +14,7 @@ public class PredictionItem {
 	public PredictionItem(double[] results, int predictionNumber, double predictionError) {
 		this.predictionNumber = predictionNumber;
 		this.rmsle = predictionError;
+		this.bikePredictionResults = results;
 	}
 	
 	public void setCurrentStatus(StationStatus status){

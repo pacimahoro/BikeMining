@@ -76,14 +76,17 @@ public class DAOManager {
 		String name;
 		double lat, lon;
 		Station s;
+		int clusterid;
 		while(rset.next()){
 			id = rset.getInt("station_id");
 			dockcount = rset.getInt("dockcount");
 			name = rset.getString("name");
 			lat = rset.getDouble("lat");
 			lon = rset.getDouble("long");
+			clusterid = rset.getInt("clusterid");
 			
 			s = new Station(id, name, lat, lon, dockcount);
+			s.setClusterId(clusterid);
 			stations.add(s);
 		}
 		

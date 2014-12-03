@@ -28,6 +28,7 @@ public class Station {
 	private String installation;
 	private List<StationStatus> hourlyStatuses;
 	private Weather weather;
+	private int clusterId;
 	
 //	public static void main(String[] args){
 //		try {
@@ -69,6 +70,14 @@ public class Station {
 		return this.id;
 	}
 	
+	public void setClusterId(int clusterid){
+		this.clusterId = clusterid;
+	}
+	
+	public int getClusterId(){
+		return this.clusterId;
+	}
+	
 	public void setName(String name){
 		this.name = name;
 	}
@@ -107,29 +116,10 @@ public class Station {
 	
 	public void retrieveHourlyActivity(){
 		try {
-			// Get all status. These are 2-minutes interval status times. 
-			List<StationStatus> statuses = DAOManager.getInstance().getStationBikeAvailability(this.getId());
-			
-//			// Now we need to group the time into 60-min interval status
-//			DateTime currentTime = statuses.get(0).getTime();
-//			this.hourlyStatuses = new ArrayList<StationStatus>();
-//			this.hourlyStatuses.add(statuses.get(0));
-//			
-//			for (StationStatus stationStatus : statuses) {
-//				Interval i = new Interval(currentTime, stationStatus.getTime());
-//
-//				if(Hours.hoursIn(i).getHours() >= 1){
-//					this.hourlyStatuses.add(stationStatus);
-//					
-//					// Update currentTime
-//					currentTime = currentTime.plusHours(1);
-//				}
-//			}
-			this.hourlyStatuses = statuses;
-			System.out.println("Starting time: " + this.hourlyStatuses.get(0).getTime());
-			System.out.println("Initial station status count: "+ statuses.size());
-			System.out.println("Trimmer Hourly status count: "+ this.hourlyStatuses.size());
-			
+			if(this.hourlyStatuses == null){
+				// Get all status. These are 2-minutes interval status times. 
+				this.hourlyStatuses = DAOManager.getInstance().getStationBikeAvailability(this.getId());				
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

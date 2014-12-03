@@ -22,17 +22,27 @@ public class Coordinator {
 
 	private StationStatus currentStatus;
 	private static Coordinator instance;
+	private Rengine re;
 	
-	public Coordinator() {
+	private Coordinator() {
+		// Create R engine
+		String jriArgs[] = {"--no-save"};
+		re = new Rengine(jriArgs, false, null);
+	 }
+	
+	public List<PredictionItem> getAllPredictions(List<Station> stations, DateTime predictionTime, int predictionCount){
+		List<PredictionItem> preds = new ArrayList<PredictionItem>();
+		for (Station station : stations) {
+			preds.add(this.runPrediction(station.getId(), predictionTime, predictionCount));
+		}
+		
+		return preds;
 	}
 
-	public void runPrediction(int stationId, DateTime predictionTime, int predictionCount){	
+	public PredictionItem runPrediction(int stationId, DateTime predictionTime, int predictionCount){	
 		try {
 			Station station = DAOManager.getInstance().getStationById(stationId);
 			getCurrentBikeStatus(stationId);
-			// Create R engine
-			String jriArgs[] = {"--no-save"};
-			Rengine re = new Rengine(jriArgs, false, null);
 			
 			// Create model
 			RegressionModel model = new BoostedRegressionModel(stationId);
@@ -41,14 +51,17 @@ public class Coordinator {
 			model.buildTrainingModel(station);
 			
 			// Build testing model
-			model.buildTestModel(station, 5, predictionTime);
+			model.buildTestModel(station, predictionCount, predictionTime);
 			
 			// Run the prediction
-			PredictionItem pred = model.predict(re, 5, predictionTime);
-		
+			PredictionItem pred = model.predict(re, predictionCount, predictionTime);
+			return pred;
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		return null;
 	}
 	
 	public List<Station> getStations(){

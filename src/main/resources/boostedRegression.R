@@ -3,7 +3,7 @@ library(xts)
 library(gbm)
 
 #load the data
-train <- read.csv('input_regression_2.csv', stringsAsFactors=FALSE)
+train <- read.csv('train_regression_2.csv', stringsAsFactors=FALSE)
 
 
 # data pre-processing

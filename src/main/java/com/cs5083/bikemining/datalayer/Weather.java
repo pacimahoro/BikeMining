@@ -15,9 +15,6 @@ public class Weather {
 		this.windSpeed = windSoeed;
 		this.event = event;
 		this.zip = zip;
-		if(this.event != null){
-			System.out.println("event: " + this.event);
-		}
 	}
 	
 	public int getTemperature(){

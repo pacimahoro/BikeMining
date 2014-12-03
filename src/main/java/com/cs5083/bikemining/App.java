@@ -17,7 +17,7 @@ public class App {
 		// Create output file if it doesn't exist.
 //		String outputFileName = "normalized_trip.csv";
 
-		Coordinator coordinator = new Coordinator();
+		Coordinator coordinator = Coordinator.getInstance();
 		
 		/**
 		 * For now, we will select time that match a given time interval. 
