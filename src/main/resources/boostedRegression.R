@@ -13,14 +13,12 @@ train$weather <- factor(train$weather, c(4,3,2,1), ordered=TRUE)
 # set the time ####
 train$datetime <- as.POSIXct(strptime(train$datetime, '%Y-%m-%d %H:%M:%S'))
 
-# create a linear model
-train.lm <- lm(count ~ ., data=train)
-
+# create a boosted model
 genmod<-gbm(train$count~.
-              ,data=train[,-c(1,7)] ## registered,casual,count columns
+              ,data=train[,-c(1,7)] ## remove datetime and count variables
               ,var.monotone=NULL # which vars go up or down with target
               ,distribution="gaussian"
-              ,n.trees=1200
+              ,n.trees=1000
               ,shrinkage=0.05
               ,interaction.depth=3
               ,bag.fraction = 0.5
@@ -30,10 +28,11 @@ genmod<-gbm(train$count~.
               ,keep.data=TRUE
               ,verbose=FALSE)
 
-genmod<-gbm(train$count~., data=train[,-c(1,7)], var.monotone=NULL, distribution='gaussian', n.trees=1200, shrinkage=0.05, interaction.depth=3, bag.fraction = 0.5, train.fraction = 1, n.minobsinnode = 10, cv.folds = 10, keep.data=TRUE, verbose=FALSE)
-
 # Find the best iter
 best.iter <- gbm.perf(genmod,method="cv")
+
+# Draw the graph of relatie influence
+summary(genmod, n.trees=best.iter)
 
 # choose n randomly selected rows of the train data
 n <- 500
