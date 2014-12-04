@@ -1,14 +1,12 @@
 # Predicting Bike Sharing Mining
-# ==============================
-
 This is an App for predicting bike availability at a given station of the Bay Area Bike Share System (http://www.bayareabikeshare.com/). 
 
 Using the Bay Area BSS data collected between August 2013 and Feb, 2014, we implement bike prediction using a Boosted Regression available in R. We interface R through JRI, a Java Interface to R (which comes as part of rJava).
 
-## Project Layout
+## 1. Project Layout
 ### A database storing historical bikeshare and weather data
-The data was downloaded from the Bay Area Website (http://www.bayareabikeshare.com/datachallenge) and was made available to the public during an App challenge conducted earlier this year.
-It contains four main tables: bike_station table, rebalancing table (contains bike availability data per minute per station), weather table, and bike_rip table. In this project, we added an additional table called bike_hourlystatus which contains bike availability data per station per hour. It's build from the rebalancing table data. In addition, we added a few fields to the bike_station table
+- The data was downloaded from the Bay Area Website (http://www.bayareabikeshare.com/datachallenge) and was made available to the public during an App challenge conducted earlier this year.
+- It contains four main tables: bike_station table, rebalancing table (contains bike availability data per minute per station), weather table, and bike_rip table. In this project, we added an additional table called bike_hourlystatus which contains bike availability data per station per hour. It's build from the rebalancing table data. In addition, we added a few fields to the bike_station table
 
 ### Business Layer Package 
 This layer contains a model that use this data to predict future number of bikes, we have implemented the boosted regression model, ARIMA and linear regression. However, we focus mainly on the boosted regression as our primary model.
@@ -20,12 +18,12 @@ This layer deals with communicating with the client app. Currently StationServle
 ### Running the Application
 There are two entry points for the server side:
 - BikeMiningStarter class: this is the main class responsible for kickstarting the server and listen to incoming client requests.
-- App class: this is the entry point to run and update all predictions. It will then save the prediction results in the database that way whenever a user requests data, the information will be there. We found more user-friendly than trying to run predictions on each request. Ideally, we would like to have this run as a background thread set on a timer. However, currently the user has to kickstart it manually.
+- App class: this is the entry point to run and update all predictions. This process then save the prediction results in the database that way whenever a user requests data, the information will be there. We found this more user-friendly rather than trying to run predictions on each request. Ideally, we would like to have this run as a background thread set on a timer. However, currently the user has to kickstart it manually.
 
 ### The Web App with an interactive map running locally 
 Lastly, we give the user a simple web app (http://localhost:8080/). We use Backbone.js and Boostrap for building the app. We display the map using MapBox.js. To get the web app running you need to be running the BikeMiningStarter class located under the Client layer package. Below, we will explain how to do all the necessary setups.  
 
-## Installation
+## 2. Installation
 
 To get the project running you will locally, you will need the following:
 
