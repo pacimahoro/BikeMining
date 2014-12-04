@@ -28,6 +28,17 @@ public interface Predictor {
 	public PredictionItem predict(Rengine rengine, int predictionNumber, DateTime currentTime);
 	
 	/**
+	 * Predict the number of bikes given but for testing using randomly selected values from the training set.
+	 * this should ONLY be used to test the performance of the algorithm.
+	 * @param re
+	 * @param predictionNumber
+	 * @param currentTime
+	 * @return PredictionItem - contains prediction results
+	 */
+	public PredictionItem predictWithRandomData(Rengine re, int predictionNumber,
+			DateTime currentTime); 
+	
+	/**
 	 * Build test model for this prediction
 	 * @param station
 	 * @param predictionNumber

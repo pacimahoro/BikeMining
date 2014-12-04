@@ -27,18 +27,20 @@ define(function(require, exports, module){
 
             var preds = station.get("predictions");
 
-            for(var i=0; i<preds.length; i++){
-                predictionsEl.push("<span>In "+(i+1)+" hour(s): <b>"+preds[i].toFixed(2)+"</b></span><br />");
+            if(preds != null){
+                predictionsEl.push("<span><b>"+ (preds > 0) ? preds.toFixed(2) : preds +"</b></span>");
             }
 
             predictionsEl = predictionsEl.join("");
-             var date = new Date(station.get("time"));
+            var date = new Date(station.get("time"));
+            var lastPredictionDate = new Date(station.get("lastpredictiontime"));
 
              var el = "<div>" +
                  "<p>Available Bikes: <span class=\"value\">"+ station.get("availablebikes")+"</span><br />"+
                  "Available Docks: <span class=\"value\">"+ station.get("availabledocks")+"</span><br />"+
-                 "Current Time: <span class=\"value\">"+ date.toString("M/d/yyyy")+"</span></p>"+
-                 "<p>Predictions: <br />"+ predictionsEl +
+                 "Current Time: <span class=\"value\">"+ date.toString("h:mm:ss tt") +"</span></p>"+
+                 "<p>Next Hour Prediction: "+ predictionsEl +"</p>"+
+                 "<p><i>Last Prediction was: "+ lastPredictionDate +"</i></p>"+
                  "</div>";
 
             return el;
@@ -105,7 +107,7 @@ define(function(require, exports, module){
 
         afterRender: function(){
             L.mapbox.accessToken = "pk.eyJ1IjoicGFjaW1haG9ybyIsImEiOiJfWVoyQ2xBIn0.qi2KQ3PiB0wSKqTLD5oUCw";
-            App.map = L.mapbox.map('map', 'pacimahoro.kcgh04ke').setView([37.329732, -121.886943], 14);
+            App.map = L.mapbox.map('map', 'pacimahoro.kcgh04ke').setView([37.329732, -121.886943], 12);
 
 
 //            App.map.addEventListener('click', function(e){

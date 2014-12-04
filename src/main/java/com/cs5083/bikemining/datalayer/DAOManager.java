@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,10 @@ public class DAOManager {
 		}
 		
 		// Create new connection
+		/*
+		 * Edit this with information PostgreSQL Configuration
+		 */
+		// TODO: Make this read configuration from a file.
 		String url = "jdbc:postgresql://localhost:5433/bikedata";
 		Properties props = new Properties();
 		props.setProperty("user","postgres");
@@ -58,8 +63,16 @@ public class DAOManager {
 			int dockcount = rset.getInt("dockcount");
 			double lat = rset.getDouble("lat");
 			double lon = rset.getDouble("long");
-			
+			double lastPrediction = rset.getDouble("prediction");
+			Date t = rset.getTimestamp("lastmodified");
+			DateTime tt = null;
+			if(t != null){
+				 tt = new DateTime(t);
+			}
+					
 			station = new Station(station_id,name, lat, lon, dockcount);
+			station.setLastPrediction(lastPrediction);
+			station.setLastModified(tt);
 		}
 		
 		return station;
@@ -85,8 +98,18 @@ public class DAOManager {
 			lon = rset.getDouble("long");
 			clusterid = rset.getInt("clusterid");
 			
-			s = new Station(id, name, lat, lon, dockcount);
+			double lastPrediction = rset.getDouble("prediction");
+			Date t = rset.getTimestamp("lastmodified");
+			DateTime tt = null;
+			if(t != null){
+				 tt = new DateTime(t);
+			}
+					
+			s = new Station(id,name, lat, lon, dockcount);
+			s.setLastPrediction(lastPrediction);
+			s.setLastModified(tt);
 			s.setClusterId(clusterid);
+			
 			stations.add(s);
 		}
 		
@@ -196,6 +219,20 @@ public class DAOManager {
 			ps.setTimestamp(4, new java.sql.Timestamp(status.getTime().getMillis()));
 			ps.executeUpdate();	
 		}	
+		return true;
+	}
+	
+	public boolean savePredictionResults(Station station) throws SQLException{
+		openDBConnection();
+		query = "UPDATE bike_station SET prediction = ?, lastmodified = ? where station_id=?"; 
+		PreparedStatement ps = conn.prepareStatement(query);
+		double[] preds = station.getPredictions();
+		DateTime date = new DateTime();
+		ps.setDouble(1, preds[0]);
+		ps.setTimestamp(2, new java.sql.Timestamp(date.getMillis()));
+		ps.setInt(3, station.getId());
+		ps.executeUpdate();	
+		
 		return true;
 	}
 	

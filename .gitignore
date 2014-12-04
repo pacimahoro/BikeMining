@@ -1,6 +1,6 @@
 /target
 /build/
-
+data/
 *.class
 
 # Package Files #

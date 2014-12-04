@@ -7,43 +7,33 @@ import java.util.List;
 import org.joda.time.DateTime;
 
 import com.cs5083.bikemining.businesslayer.Coordinator;
+import com.cs5083.bikemining.businesslayer.PredictionItem;
 import com.cs5083.bikemining.datalayer.DAOManager;
 import com.cs5083.bikemining.datalayer.Station;
 
 public class App {
 	
 	public static void main(String[] args){
-		System.out.println("Bike Sharing Mining App started");
-		// Create output file if it doesn't exist.
-//		String outputFileName = "normalized_trip.csv";
-
+		System.out.println("**** Bike Sharing Prediction process started *****");
 		Coordinator coordinator = Coordinator.getInstance();
 		
+
+		// Get all stations.
+		System.out.println("Retrieving all stations data");
+		List<Station> stations = Coordinator.getInstance().getStations();
+
 		/**
 		 * For now, we will select time that match a given time interval. 
 		 * Hopefully at least a day or month or several months.
 		 * We will then run our prediction and compare the results with the actual prediction for that time interval.
 		 */
-
-		DateTime todayLastYear = DateTime.now().minusMonths(12);
-		int predictionCount = 5;
-		int stationId = 2;
+		DateTime currentTime = DateTime.now().minusMonths(12);
 		
-		coordinator.runPrediction(stationId, todayLastYear, predictionCount);
-		
-		
-		
-//		try {
-//			File file = new File(outputFileName);
-//			file.createNewFile();
-//			
-//			generateNormalizedTripFile(outputFileName);
-//			
-//			
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		
+		/*
+		 * Run predictions for each stations based on currentTime and prediction count.
+		 */
+		List<PredictionItem> stationPredictions = coordinator.getAllPredictions(stations, currentTime, 5);
+		System.out.println("**** Bike Sharing Prediction process completed *****");
 	}
 	
 	public static String getNormalizedTripHeader(){

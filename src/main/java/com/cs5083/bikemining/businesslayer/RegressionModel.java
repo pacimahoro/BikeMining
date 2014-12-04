@@ -25,6 +25,10 @@ public class RegressionModel implements Predictor {
 	
 	public String traningFileName;
 	public String testingFileName;
+	public int testingSize;
+	
+	// Index of where the training and testing dataset splits.
+	public int splitIndex;	
 	public static String DEFAULT_DIR = "~/Documents/OU/DataMining/BikeMining";
 	public static int PREDICTION_COUNT = 5;
 	
@@ -111,7 +115,7 @@ public class RegressionModel implements Predictor {
 		hourlyActivity = station.getHourlyBikeActivity(includeWeatherData);
 		
 		// 4. Create input file for the mining task
-		String fileName = "train_regression_"+stationId+".csv";
+		String fileName = "src/main/resources/data/train_regression_"+stationId+".csv";
 		
 		this.writeRegressionData(hourlyActivity, fileName);
 		this.traningFileName = fileName;
@@ -177,6 +181,7 @@ public class RegressionModel implements Predictor {
 		PredictionItem predictionItem = new PredictionItem(results, PREDICTION_COUNT, x.asDouble());
 		return predictionItem;
 	}
+	
 
 	@Override
 	public String buildTestModel(Station station, int predictionNumber,
@@ -184,22 +189,36 @@ public class RegressionModel implements Predictor {
 		
 		List<StationStatus> filteredTestStatuses = new ArrayList<StationStatus>();
 		
-		int i = -1;
+		int i = 0;
+		boolean splitset = false;
 		// TODO: use java collection filters (lambdas) instead of this brute force approach
 		for (StationStatus stationStatus : hourlyActivity) {
 			if(stationStatus.getTime().isAfter(startingTime.getMillis())){
 				filteredTestStatuses.add(stationStatus);
+				if (splitset == false) {
+					this.splitIndex = i+1;
+					splitset = true;
+				}
 			}
 			i++;
 		}
 		
-		String fileName = "test_regression_"+ stationId + ".csv";
+		String fileName = "src/main/resources/data/test_regression_"+ stationId + ".csv";
 		if(filteredTestStatuses.size() > 0){
 			this.writeRegressionData(filteredTestStatuses, fileName);
+			testingSize = filteredTestStatuses.size();
 			testingFileName = fileName;
 			return fileName;
 		}
 		
+		
+		return null;
+	}
+
+	@Override
+	public PredictionItem predictWithRandomData(Rengine re,
+			int predictionNumber, DateTime currentTime) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

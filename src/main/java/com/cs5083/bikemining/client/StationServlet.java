@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -81,8 +82,6 @@ public class StationServlet extends HttpServlet {
 		
 		if ("/stations".equalsIgnoreCase(req.getServletPath())) {
 			List<Station> stations = Coordinator.getInstance().getStations();
-			DateTime currentTime = DateTime.now().minusMonths(12);
-			List<PredictionItem> stationPredictions = Coordinator.getInstance().getAllPredictions(stations, currentTime, 5);
 			try{
 				JSONObject respData = new JSONObject();
 				JSONArray stationsData = new JSONArray();
@@ -92,7 +91,6 @@ public class StationServlet extends HttpServlet {
 				PredictionItem prediction = null;
 				for (int i = 0; i < stations.size(); i++) {
 					station = stations.get(i);
-					prediction = stationPredictions.get(i);
 					 
 					obj = new JSONObject();
 						
@@ -104,33 +102,17 @@ public class StationServlet extends HttpServlet {
 					
 					StationStatus status = Coordinator.getInstance().getCurrentBikeStatus(station.getId());
 					if(status != null){
-						obj.put("time", status.getTime());
-						obj.put("avalaiblebikes", status.getAvailableBikes());
-						obj.put("avalaibledocks", status.getAvailableDocks());	
+						LocalDateTime lt = new LocalDateTime(status.getTime().getMillis());
+						obj.put("time", lt);
+						obj.put("availablebikes", status.getAvailableBikes());
+						obj.put("availabledocks", status.getAvailableDocks());	
 					}
 					
-//					double[] results = prediction.getResults();
-					obj.put("predictions", prediction.getResults());	
+					obj.put("predictions", station.getLastPrediction());
+					LocalDateTime dt = new LocalDateTime(station.getLastModified().getMillis());
+					obj.put("lastpredictiontime", dt);
 					stationsData.put(obj);
 				}
-				
-//				for (Station station : stations) {
-//					obj = new JSONObject();
-//					
-//					obj.put("stationid", station.getId());
-//					obj.put("lat", station.getLatitude());
-//					obj.put("lon", station.getLongitude());
-//					obj.put("name", station.getName());
-//					
-//					StationStatus status = Coordinator.getInstance().getCurrentBikeStatus(station.getId());
-//					if(status != null){
-//						obj.put("time", status.getTime());
-//						obj.put("avalaiblebikes", status.getAvailableBikes());
-//						obj.put("avalaibledocks", status.getAvailableDocks());	
-//					}
-//					
-//					stationsData.put(obj);
-//				}
 				
 //				respData.put("data", stationsData);
 				resp.getWriter().println(stationsData);
@@ -166,8 +148,8 @@ public class StationServlet extends HttpServlet {
 					StationStatus status = predictionItem.getCurrentStatus();
 					if(status != null){
 						obj.put("time", status.getTime());
-						obj.put("avalaiblebikes", status.getAvailableBikes());
-						obj.put("avalaibledocks", status.getAvailableDocks());	
+						obj.put("availablebikes", status.getAvailableBikes());
+						obj.put("availabledocks", status.getAvailableDocks());	
 					}
 					
 					JSONArray resultsObj = new JSONArray();

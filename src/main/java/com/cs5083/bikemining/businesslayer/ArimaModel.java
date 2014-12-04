@@ -71,4 +71,11 @@ public class ArimaModel implements Predictor {
 		return null;
 	}
 
+	@Override
+	public PredictionItem predictWithRandomData(Rengine re,
+			int predictionNumber, DateTime currentTime) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

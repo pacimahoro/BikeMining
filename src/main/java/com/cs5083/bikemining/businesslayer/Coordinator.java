@@ -55,8 +55,9 @@ public class Coordinator {
 			
 			// Run the prediction
 			PredictionItem pred = model.predict(re, predictionCount, predictionTime);
-			return pred;
+			station.savePredictionResults(pred);
 			
+			return pred;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

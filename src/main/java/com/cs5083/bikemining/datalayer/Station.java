@@ -6,11 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.net.ssl.SSLEngineResult.Status;
-
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
-import org.joda.time.Interval;
+
+import com.cs5083.bikemining.businesslayer.PredictionItem;
 
 /**
  * This class implements a model object for a Bike Station
@@ -29,6 +28,9 @@ public class Station {
 	private List<StationStatus> hourlyStatuses;
 	private Weather weather;
 	private int clusterId;
+	private double[] predictions;
+	private double lastPrediction;
+	private DateTime lastModified;
 	
 //	public static void main(String[] args){
 //		try {
@@ -76,6 +78,22 @@ public class Station {
 	
 	public int getClusterId(){
 		return this.clusterId;
+	}
+	
+	public void setLastPrediction(double p){
+		this.lastPrediction = p;
+	}
+	
+	public double getLastPrediction(){
+		return this.lastPrediction;
+	}
+	
+	public void setLastModified(DateTime t){
+		this.lastModified = t;
+	}
+	
+	public DateTime getLastModified(){
+		return this.lastModified;
 	}
 	
 	public void setName(String name){
@@ -153,6 +171,24 @@ public class Station {
 			}
 		}
 		return null;
+	}
+	
+	public boolean savePredictionResults(PredictionItem item){
+		// Save the prediction results
+		this.predictions = item.getResults();
+		try {
+			DAOManager.getInstance().savePredictionResults(this);
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	public double[] getPredictions(){
+		return this.predictions;
 	}
 	
 	public void retrieveWeatherData(){

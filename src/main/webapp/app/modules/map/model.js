@@ -27,7 +27,9 @@ define(function(require, exports, module) {
 
             'predictions':[],
 
-            'clusterid': 1
+            'clusterid': 1,
+
+            'lastpredictiontime': null
         }
     });
 
